@@ -1,0 +1,5 @@
+{
+  "name": "project-progress",
+  "owner": { "name": "talmax1124" },
+  "plugins": [{ "name": "project-progress", "source": "./" }]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "project-progress",
+  "version": "0.1.0",
+  "description": "A live pane with one progress bar per thread in this project",
+  "types": "./types/index.d.ts"
+}
