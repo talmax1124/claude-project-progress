@@ -134,4 +134,31 @@ export const register: Register = on => {
       </Box>
     )
   })
+  // A compact strip above the prompt: open threads only, one line each, so it stays out of the way.
+  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
+    const list = await read($, items)
+    const open = list.filter(item => !item.resolved && item.bucket !== 'completed')
+    if (e.props.hasSurvey || open.length === 0) return next(e)
+
+    const { Box, Text } = $.ui.resolve(e)
+    const room = Math.max(1, Math.min(6, e.props.maxRows - 1))
+    const shown = open.slice(0, room)
+
+    return (
+      <Box flexDirection="column">
+        {shown.map(item => {
+          const fraction = progressOf(item)
+          const bucket = BUCKET[item.bucket] ?? { label: item.bucket, color: 'subtle' }
+
+          return (
+            <Text key={item.threadId}>
+              <Text color={bucket.color}>{barOf(fraction, 10)}</Text> {String(Math.round(fraction * 100)).padStart(3)}%{' '}
+              {item.title} <Text dimColor>· {bucket.label}</Text>
+            </Text>
+          )
+        })}
+        {open.length > shown.length && <Text dimColor>+{open.length - shown.length} more · /progress for all</Text>}
+      </Box>
+    )
+  })
 }

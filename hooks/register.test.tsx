@@ -53,20 +53,41 @@ test('the pane draws a bar per thread on every surface', async ($, on) => {
     return { value: { isError: false, content: [{ type: 'text', text: wrap(payload) }] } }
   })
   on('ui.open', async () => ({ value: { isPlaced: true } }))
-  await $.command.run({ command: 'progress', args: '' })
+  await $.command.run({ command: 'progress', args: '' } as never)
   for (const surface of ['terminal', 'desktop'] as const) {
     const ui = await $.ui.mount({
       plugin: 'project-progress',
       surface,
       component: 'Pane',
       requestId: 'project-progress',
-      props: { title: 'Project progress', isFocused: false, bodyColumns: 60, placement: 'dock' },
+      props: { title: 'Project progress', isFocused: false, bodyColumns: 60, placement: 'dock' } as never,
     })
     expect(await ui.find({ text: /Checkout redesign/ })).toBeDefined()
     expect(await ui.find({ text: /63%/ })).toBeDefined()
     expect(await ui.find({ text: /Now: Waiting on you: approve the copy/ })).toBeDefined()
     expect(await ui.find({ text: /Resolved/ })).toBeDefined()
     expect(await ui.find({ text: /2 threads · 81% overall/ })).toBeDefined()
+    await ui.unmount()
+  }
+})
+
+test('the strip above the prompt lists open threads only', async ($, on) => {
+  on('mcp.call', async (_$, e) => {
+    const payload = e.tool === 'list_thread_sessions' ? SESSIONS : THREADS[String(e.args.thread_id)]
+
+    return { value: { isError: false, content: [{ type: 'text', text: wrap(payload) }] } }
+  })
+  on('ui.open', async () => ({ value: { isPlaced: true } }))
+  await $.command.run({ command: 'progress', args: '' } as never)
+  for (const surface of ['terminal', 'desktop'] as const) {
+    const ui = await $.ui.mount({
+      plugin: 'project-progress',
+      surface,
+      component: 'AbovePrompt',
+      props: { hasSurvey: false, isWorking: false, maxRows: 10, bodyColumns: 80 } as never,
+    })
+    expect(await ui.find({ text: /Checkout redesign/ })).toBeDefined()
+    expect(await ui.find({ text: /Docs cleanup/ })).toBeUndefined()
     await ui.unmount()
   }
 })

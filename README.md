@@ -2,6 +2,8 @@
 
 A Claude Code mod that opens a **Project progress** pane in sessions that belong to a Claude project. Each thread in the project gets one row: a progress bar for how far through its checklist it is (a step in progress counts as half done), its status (Working, Needs you, Ready for review, Done, Resolved) and the step it is on now. The pane refreshes every 30 seconds and has a Refresh button. `/progress` reopens it.
 
+A compact strip just above the prompt shows the open threads (up to six), one bar each, so you can see where things stand without opening the pane.
+
 It reads the project's threads through the project tools, so outside a Claude project session the pane says it has nothing to read.
 
 ## Install
